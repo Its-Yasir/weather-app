@@ -8,50 +8,32 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="container">
-    <div class="search-container">
-      <input type="text" name="search" id="search" class="search-bar" placeholder="Enter a City Name">
+
+  <nav>
+    <div class="search-box">
+      <input type="text" class="search-input" placeholder="Enter a City Name">
       <button class="search-btn">
         <span class="mingcute--search-line"></span>
       </button>
     </div>
-    <div class="search-options">
-      <div class="country">Australia</div>
-      <div class="country">Bangladesh</div>
-      <div class="country">China</div>
-      <div class="country">Pakistan</div>
-    </div>
-
-    <h2 class="city-name">Lahore, Pakistan</h2>
-    <div class="temperature">
-      <span class="value">29</span>
-      <span class="degree">o</span>
-      <span class="unit">C</span>
-    </div>
-
-    <div class="conditions">
-      <div class="humidity">
-        <span class="meteocons--dust-wind-fill"></span>
-        <div class="text">
-          <div>
-            <div class="head">Humidity:</div>
-            <div class="humidity-value values">120</div>
-          </div>
-          <div>
-            <div class="head">Air Speed:</div>
-            <div class="air-speed-value values">350</div></div>
-        </div>
-      </div>
-      <div class="weather">
-        <span class="clear-day"></span>
-        <div class="text">
-          <div class="head">Weather:</div>
-          <div class="weather-value values">Clear Day</div>
-        </div>
+    <div class="profile">
+      <button class="notification-btn">
+        <span class="basil--notification-outline"></span>
+      </button>
+      <div class="picture">
+        <img src="assets/user.png" alt="user image">
       </div>
     </div>
-  </div>
+  </nav>
 
-<script src="script.js" type="module"></script>
+  <main>
+    <div class="current-weather-box"></div>
+    <div class="map-box"></div>
+    <div class="popular-cities-box"></div>
+    <div class="forcast-box"></div>
+    <div class="summary-box"></div>
+  </main>
+
+  <script src="script.js" type="module"></script>
 </body>
 </html>

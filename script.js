@@ -4,15 +4,6 @@ const url = 'https://api.weatherapi.com/v1/current.json?key=b19bdbbf07a84cba9651
 const options = {
   method: 'GET'
 };
-navigator.geolocation.getCurrentPosition(success, error);
-
-function success(position) {
-  const lat = position.coords.latitude;
-  const lon = position.coords.longitude;
-
-  // Call your function to show the map
-  showMap(lat, lon, "Your Location");
-}
 
 function error() {
   alert("Unable to retrieve your location. Please allow location access.");
@@ -35,8 +26,100 @@ async function fetchWeather() {
     console.error('Error fetching weather data:', error);
   }
 }
+const ctx = document.getElementById('temperatureChart').getContext('2d');
 
-fetchWeather();
+  // Example temperature data in Celsius
+  const temperatureData = [70, 78, 62, 75, 81, 85, 76, 81, 82, 75];
+  document.getElementById('temperatureChart').width = temperatureData.length * 100;
+  // Labels for every hour (you can customize this dynamically)
+  const labels = ['1 AM', '2 AM', '3 AM', '4 AM', '5 AM', '6 AM', '7 AM', '8 AM', '9 AM', '10 AM'];
+
+  // Create a vertical gradient fill (top to bottom)
+  const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+  gradient.addColorStop(0, 'rgba(39, 107, 255, 0.98)');
+  gradient.addColorStop(1, 'rgba(102, 99, 255, 0)');
+const chart = new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels: labels,
+    datasets: [{
+      data: temperatureData,
+      fill: true,
+      backgroundColor: gradient,
+      borderColor: 'rgba(0, 60, 255, 1)',
+      tension: 0.3,
+      pointBackgroundColor: '#0011ff',
+      pointBorderColor: 'rgba(0, 8, 255, 0)',
+    }]
+  },
+  options: {
+    responsive: false,
+    plugins: {
+      legend: {
+        display: false
+      },
+      datalabels: {
+        align: 'top',
+        anchor: 'end',
+        color: '#fff',
+        font: {
+          family: 'Poppins',   // ✅ Use Poppins
+          size: 16,            // ✅ Make labels bigger
+          weight: 'bold'       // ✅ Bold
+        },
+        formatter: (value) => `${value}%`
+      }
+    },
+    scales: {
+      x: {
+        ticks: {
+          color: '#ffffff',
+          font: {
+            family: 'Poppins',  // ✅ Font for X-axis
+            size: 14,           // ✅ Slightly bigger
+            weight: '600'       // ✅ Semi-bold
+          }
+        },
+        grid: {
+          display: false
+        },
+        title: {
+          display: true,
+          text: 'Time (Hourly)',
+          color: '#ffffff',
+          font: {
+            family: 'Poppins',
+            size: 16,
+            weight: 'bold'
+          }
+        }
+      },
+      y: {
+        grid: {
+          display: false
+        },
+        ticks: {
+          display: false
+        },
+        title: {
+          display: true,
+          text: 'Chances of Rain',
+          color: '#fff',
+          font: {
+            family: 'Poppins',
+            size: 16,
+            weight: 'bold'
+          }
+        },
+        grace: '10%'
+      }
+    }
+  },
+  plugins: [ChartDataLabels]
+});
+
+
+
 
 
 

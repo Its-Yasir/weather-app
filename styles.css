@@ -109,7 +109,7 @@ main{
   height: 800px;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
-  grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  grid-auto-rows: minmax(100px, auto);
   margin-top: 50px;
   padding: 20px;
   gap: 15px;
@@ -257,6 +257,9 @@ main{
 }
 .popular-cities-box{
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
 }
 .popular-cities-box img{
   width: 30px;
@@ -358,4 +361,81 @@ main{
 .forcast-box{
   -ms-overflow-style: none; /* IE 10+ */
   scrollbar-width: none;    /* Firefox */
+}
+.summary-box{
+  overflow-x: auto;
+  width: 100%;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+}
+.summary-controls{
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+.summary-selector{
+  display: flex;
+  width: max-content;
+  column-gap: 10px;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.27);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 7px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  transition: all 0.3s ease;
+  padding: 5px 5px;
+  cursor: pointer;
+  display: flex;
+  height: max-content;
+  align-items: center;
+}
+.summary-box::-webkit-scrollbar {
+  display: none;
+}
+
+.summary-box{
+  -ms-overflow-style: none; /* IE 10+ */
+  scrollbar-width: none;    /* Firefox */
+}
+.summary-controls h2{
+  font-weight: 500;
+}
+.activated-summary-selector{
+  background-color: rgba(172, 172, 172, 0.55);
+  width: max-content;
+  height: max-content;
+  padding: 5px 10px;
+  border-radius: 5px;
+  
+}
+
+
+/*! RESPONSIVENESS */
+
+@media screen and (max-width:1300px) {
+  .weather-condition{
+    bottom: 10px;
+  }
+}
+@media screen and (max-width:1200px) {
+  .current-weather-box{
+    grid-area: 1 / 1 / 4 / 3;
+  }
+  .map-box{
+    grid-area: 1 / 3 / 4 / 5;
+  }
+  .popular-cities-box{
+    grid-area: 4 / 1 / 7 / 3;
+  }
+  .forcast-box{
+    grid-area: 4 / 3 / 7 / 5;
+  }
+  .summary-box{
+    grid-area: 7 / 1 / 12 / 5;
+  }
 }

@@ -1,6 +1,19 @@
-let lat, lon, result;
+import { getCurrentTime } from "./funs.js";
 
-const url = 'https://api.weatherapi.com/v1/current.json?key=b19bdbbf07a84cba965153941251108&q=islamabad';
+let lat, 
+    lon,
+    result,
+    city='Lahore',
+    country='Pakistan',
+    weather = 'Heavy Rain',
+    temperature=24,
+    uv=5.1,
+    humidity=58,
+    airSpeed='18 kph',
+    heat = 37,
+    time='6:43 PM';
+
+
 const options = {
   method: 'GET'
 };
@@ -8,17 +21,38 @@ const options = {
 function error() {
   alert("Unable to retrieve your location. Please allow location access.");
 }
-async function fetchWeather() {
+async function fetchCurrentWeather(cityParam) {
+  const url = `https://api.weatherapi.com/v1/current.json?key=b19bdbbf07a84cba965153941251108&q=${cityParam}`;
   try {
     const response = await fetch(url, options);
     result = await response.json();
-
+    city = result.location.name;
+    country = result.location.country;
+    temperature = parseInt(result.current.temp_c);
+    uv = result.current.uv;
+    humidity = result.current.humidity;
+    airSpeed = result.current.wind_kph;
+    heat = result.current.heatindex_c;
+    weather = result.current.condition.text;
+    console.log(city);
+    console.log(country);
+    console.log(temperature);
+    console.log(uv);
+    console.log(humidity);
+    console.log(airSpeed);
+    console.log(heat);
+    document.querySelector('.current').textContent = `${city}, ${country}`
+    document.querySelector('.time').textContent = getCurrentTime();
+    document.querySelector('.temp-value').textContent = temperature;
+    document.querySelector('.weather-condition').textContent = weather;
+    document.querySelector('.uv-value').textContent = uv;
+    document.querySelector('.heat-value').textContent = heat;
+    document.querySelector('.humidity-value').textContent = humidity;
+    document.querySelector('.wind-value').textContent = airSpeed;
+    
     lat = result.location.lat;
     lon = result.location.lon;
-
-    console.log("Latitude:", lat);
-    console.log("Longitude:", lon);
-    console.log("Full result:", result);
+    console.log(result)
     const mapUrl = `https://maps.locationiq.com/v3/staticmap?key=pk.1da9136f8ec6ed1f78714e47b665667b&center=${lat},${lon}&zoom=10&size=621x275&format=png&maptype=streets&markers=icon:https://locationiq.com/static/img/marker.png|${lat},${lon}`;
     document.querySelector('.map-box').style.background = `url('${mapUrl}')`
     // You can now call other functions that depend on lat/lon here
@@ -26,6 +60,10 @@ async function fetchWeather() {
     console.error('Error fetching weather data:', error);
   }
 }
+fetchCurrentWeather('lahore');
+
+
+
 const ctx = document.getElementById('temperatureChart').getContext('2d');
 
   // Example temperature data in Celsius
@@ -119,7 +157,21 @@ const chart = new Chart(ctx, {
 });
 
 
-
+document.querySelector('.check-city-weather-lahore').addEventListener('click',()=>{
+  fetchCurrentWeather('lahore')
+});
+document.querySelector('.check-city-weather-karachi').addEventListener('click',()=>{
+  fetchCurrentWeather('karachi')
+});
+document.querySelector('.check-city-weather-islamabad').addEventListener('click',()=>{
+  fetchCurrentWeather('islamabad')
+});
+document.querySelector('.check-city-weather-hafizabad').addEventListener('click',()=>{
+  fetchCurrentWeather('hafizabad')
+});
+document.querySelector('.check-city-weather-istanbul').addEventListener('click',()=>{
+  fetchCurrentWeather('istanbul')
+});
 
 
 

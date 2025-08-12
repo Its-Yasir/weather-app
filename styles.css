@@ -255,3 +255,107 @@ main{
   transition: all 0.3s ease;
   padding: 5px;
 }
+.popular-cities-box{
+  padding: 20px;
+}
+.popular-cities-box img{
+  width: 30px;
+  height: 30px;
+}
+.popular{
+  display: flex;
+  column-gap: 10px;
+  align-items: center;
+  width: max-content;
+  justify-content: space-between;
+  width: 90%;
+  margin-top: 10px;
+  margin-left: 10px;
+}
+.city-name{
+  font-weight: 500;
+  display: flex;
+  height: max-content;
+  align-items: center;
+  column-gap: 10px;
+}
+.check-city-weather{
+  display: flex;
+  height: max-content;
+  align-items: center;
+  cursor: pointer;
+}
+.check-city-weather:hover .iconamoon--arrow-right-2{
+  transform: translateX(10px);
+}
+.forcast-box{
+  overflow: scroll;
+  overflow-x: hidden;
+  padding: 10px;
+  padding-top: 20;
+}
+.forcast-controls{
+  display: flex;
+  width: 100%;
+  height: max-content;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.forcast-controls h2{
+  font-size: 1.3rem;
+  font-weight: 500;
+}
+.forcast-selector{
+  display: flex;
+  column-gap: 5px;
+  height: max-content;
+  align-items: center;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.27);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 7px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  transition: all 0.3s ease;
+  padding: 5px 5px;
+  cursor: pointer;
+}
+.active-forcast-day-selector{
+  background-color: rgba(117, 117, 117, 0.55);
+  padding: 3px 7px;
+  border-radius: 5px;
+}
+.forcast-for-day{
+  display: flex;
+  padding: 10px;
+  width: 100%;
+  justify-content: space-between;
+}
+.forcast-temperature{
+  font-weight: 600;
+  position: relative;
+}
+.forcast-degree{
+  font-size: 0.8rem;
+  font-weight: 400;
+  position: absolute;
+  top: -8px;
+  right: -8px;
+}
+.date-of-forcast{
+  display: flex;
+  column-gap: 5px;
+}
+.forcast-date{
+  font-weight: 500;
+}
+.forcast-box::-webkit-scrollbar {
+  display: none;
+}
+
+.forcast-box{
+  -ms-overflow-style: none; /* IE 10+ */
+  scrollbar-width: none;    /* Firefox */
+}

@@ -14,3 +14,19 @@ export function getCurrentTime() {
 
     return `${formattedHours}:${formattedMinutes} ${ampm}`;
 }
+export async function getTimeByLatLon(lat, lon) {
+  try {
+    const res = await fetch(`https://timeapi.io/api/Time/current/coordinate?latitude=${lat}&longitude=${lon}`);
+    const data = await res.json();
+
+    // Format time to skip seconds
+    let [hour, minute] = data.time.split(':'); // "18:43:05" → ["18","43","05"]
+    hour = parseInt(hour, 10);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    hour = hour % 12 || 12;
+    return `${hour}:${minute} ${ampm}`;
+  } catch (err) {
+    console.error('Error fetching time:', err);
+    return 'Invalid time';
+  }
+}

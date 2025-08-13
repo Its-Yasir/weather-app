@@ -1,4 +1,4 @@
-import { getCurrentTime } from "./funs.js";
+import { getCurrentTime,getTimeByLatLon } from "./funs.js";
 
 let lat, 
     lon,
@@ -34,26 +34,23 @@ async function fetchCurrentWeather(cityParam) {
     airSpeed = result.current.wind_kph;
     heat = result.current.heatindex_c;
     weather = result.current.condition.text;
-    console.log(city);
-    console.log(country);
-    console.log(temperature);
-    console.log(uv);
-    console.log(humidity);
-    console.log(airSpeed);
-    console.log(heat);
-    document.querySelector('.current').textContent = `${city}, ${country}`
-    document.querySelector('.time').textContent = getCurrentTime();
+    document.querySelector('.current').textContent = `${city}, ${country}`;
     document.querySelector('.temp-value').textContent = temperature;
-    document.querySelector('.weather-condition').textContent = weather;
+    document.querySelector('.weather-condition-js').textContent = weather;
     document.querySelector('.uv-value').textContent = uv;
     document.querySelector('.heat-value').textContent = heat;
     document.querySelector('.humidity-value').textContent = humidity;
     document.querySelector('.wind-value').textContent = airSpeed;
-    
+    document.querySelector('.current-weather-img').src = `${result.current.condition.icon}`
     lat = result.location.lat;
     lon = result.location.lon;
+    getTimeByLatLon(lat, lon).then(time => {
+      document.querySelector('.time').textContent = time;
+    });
     console.log(result)
-    const mapUrl = `https://maps.locationiq.com/v3/staticmap?key=pk.1da9136f8ec6ed1f78714e47b665667b&center=${lat},${lon}&zoom=10&size=621x275&format=png&maptype=streets&markers=icon:https://locationiq.com/static/img/marker.png|${lat},${lon}`;
+    let mapWidth = document.querySelector('.map-box').clientWidth;
+    let mapHeight = document.querySelector('.map-box').clientHeight;
+    const mapUrl = `https://maps.locationiq.com/v3/staticmap?key=pk.1da9136f8ec6ed1f78714e47b665667b&center=${lat},${lon}&zoom=10&size=${mapWidth}x${mapHeight}&format=png&maptype=streets&markers=icon:https://locationiq.com/static/img/marker.png|${lat},${lon}`;
     document.querySelector('.map-box').style.background = `url('${mapUrl}')`
     // You can now call other functions that depend on lat/lon here
   } catch (error) {

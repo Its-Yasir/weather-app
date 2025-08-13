@@ -12,7 +12,8 @@ let lat,
     humidity=58,
     airSpeed='18 kph',
     heat = 37,
-    time='6:43 PM';
+    time='6:43 PM',
+    chart = null;
 
 const options = {
   method: 'GET'
@@ -56,9 +57,17 @@ export async function fetchCurrentWeather(cityParam) {
     const mapUrl = `https://maps.locationiq.com/v3/staticmap?key=pk.1da9136f8ec6ed1f78714e47b665667b&center=${lat},${lon}&zoom=10&size=${mapWidth}x${mapHeight}&format=png&maptype=streets&markers=icon:https://locationiq.com/static/img/marker.png|${lat},${lon}`;
     document.querySelector('.map-box').style.background = `url('${mapUrl}')`
 
-    console.log(city)
+    let rainPercentage = [];
     let forcastForGraph = await fetchForecast(city,1);
-    console.log(forcastForGraph)
+    console.log(forcastForGraph.forecast.forecastday[0].hour)
+    forcastForGraph.forecast.forecastday[0].hour.forEach((hourData,index)=>{
+      if(index%2 !== 0){
+        rainPercentage.push(`${
+      hourData.chance_of_rain}`)
+      }
+    })
+    console.log(rainPercentage);
+    generateChart(rainPercentage);
 
     // You can now call other functions that depend on lat/lon here
     return {
@@ -78,11 +87,13 @@ if(forcastDaysValue===10){
   renderForecast('gujrat',7)
 }
 
-function generateChart(){
+function generateChart(array){
   const ctx = document.getElementById('temperatureChart').getContext('2d');
-
     // Example temperature data in Celsius
-    const temperatureData = [70, 78, 62, 75, 81, 85, 76, 81, 82, 75, 25, 46];
+    const temperatureData = array;
+    if (chart) {
+    chart.destroy();
+  }
     document.getElementById('temperatureChart').width = temperatureData.length * 100;
     // Labels for every hour (you can customize this dynamically)
     const labels = ['1 AM', '3 AM', '5 AM', '7 AM', '9 AM', '11 AM', '1 PM', '8 PM', '10 PM', '12 PM'];
@@ -90,7 +101,7 @@ function generateChart(){
     const gradient = ctx.createLinearGradient(0, 0, 0, 400);
     gradient.addColorStop(0, 'rgba(39, 107, 255, 0.98)');
     gradient.addColorStop(1, 'rgba(102, 99, 255, 0)');
-  const chart = new Chart(ctx, {
+  chart = new Chart(ctx, {
     type: 'line',
     data: {
       labels: labels,
@@ -170,7 +181,6 @@ function generateChart(){
     plugins: [ChartDataLabels]
   });
 }
-generateChart();
 
 document.querySelector('.check-city-weather-lahore').addEventListener('click',async()=>{
   await fetchCurrentWeather('lahore');
@@ -265,4 +275,3 @@ searchBtn.addEventListener('click',()=>{
   fetchCurrentWeather(city);
   renderForecast(city,7)
 })
-

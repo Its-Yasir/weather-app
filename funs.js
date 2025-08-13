@@ -1,4 +1,4 @@
-import { fetchCurrentWeather } from "./script.js";
+import { fetchCurrentWeather,fetchForecast } from "./script.js";
 
 export function getCurrentTime() {
     const now = new Date();
@@ -47,4 +47,65 @@ export async function getCurrentLocation(){
             alert(`Error getting location: ${error.message}`);
         }
     );
+}
+
+export function getDateInfo(daysAhead = 0) {
+  // Create a date object for today + daysAhead
+  const date = new Date();
+  date.setDate(date.getDate() + daysAhead);
+
+  // Arrays for short month and day names
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+  // Extract values
+  const dateNum = String(date.getDate()).padStart(2, "0"); // e.g., "03"
+  const monthShort = months[date.getMonth()]; // e.g., "Jul"
+  const dayShort = days[date.getDay()]; // e.g., "Sun"
+
+  return {
+    date: dateNum,
+    month: monthShort,
+    day: dayShort
+  };
+}
+
+export function selectDaysForForcast(){
+    let btnClick;
+    document.querySelectorAll('.forcast-days-selected')
+        .forEach((btn)=>{
+            if(btn.classList.contains('active-forcast-day-selector')){
+                btnClick = btn;
+            } 
+            
+        })
+        return btnClick.dataset.forcastSelected
+    }
+
+export async function renderForecast(city,days){
+    console.log(city)
+    const result = await fetchForecast(city,days);
+    const forecast = result.forecast.forecastday;
+    console.log(result);
+    let html='';
+    forecast.forEach((day,index)=>{
+        html+= `
+            <div class="forcast-for-day">
+            <img src=${day.day.condition.icon} alt="weather img">
+            <div class="forcast-temperature">${parseInt(day.day.mintemp_c)}
+                <div class="forcast-degree">o</div>
+            </div>
+            <span>/</span>
+            <div class="forcast-temperature">${parseInt(day.day.maxtemp_c)}
+                <div class="forcast-degree">o</div>
+            </div>
+            <div class="date-of-forcast">
+                <div class="forcast-date">${getDateInfo(index).date}</div>
+                <div class="forcast-month">${getDateInfo(index).month + ','}</div>
+                <div class="forcast-day">${getDateInfo(index).day}</div>
+            </div>
+            </div>
+        `
+    });
+    document.querySelector('.forcasts').innerHTML = html;
 }

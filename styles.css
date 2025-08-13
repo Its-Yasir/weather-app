@@ -335,6 +335,8 @@ main{
 .forcast-for-day{
   display: flex;
   padding: 10px;
+  height: max-content;
+  align-items: center;
   width: 100%;
   justify-content: space-between;
 }

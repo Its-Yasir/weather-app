@@ -1,7 +1,8 @@
-import { getCurrentTime,getTimeByLatLon,getCurrentLocation } from "./funs.js";
+import { getCurrentTime,getTimeByLatLon,getCurrentLocation,selectDaysForForcast, renderForecast } from "./funs.js";
 
 let lat, 
     lon,
+    forcastDaysValue = 7,
     result,
     city,
     country='Pakistan',
@@ -63,10 +64,14 @@ export async function fetchCurrentWeather(cityParam) {
     console.error('Error fetching weather data:', error);
   }
 }
-fetchCurrentWeather('lahore');
+await fetchCurrentWeather('gujrat');
+if(forcastDaysValue===10){
+  renderForecast('gujrat',10)
+}else{
+  renderForecast('gujrat',7)
+}
 
-
-function generateCart(){
+function generateChart(){
   const ctx = document.getElementById('temperatureChart').getContext('2d');
 
     // Example temperature data in Celsius
@@ -162,25 +167,27 @@ function generateCart(){
 
 document.querySelector('.check-city-weather-lahore').addEventListener('click',async()=>{
   await fetchCurrentWeather('lahore');
-  console.log(city)
+  renderForecast('lahore',7)
 });
 document.querySelector('.check-city-weather-karachi').addEventListener('click',async()=>{
   await fetchCurrentWeather('karachi');
-  console.log(city);
+  renderForecast('karachi',7)
 });
 document.querySelector('.check-city-weather-islamabad').addEventListener('click',async()=>{
-  await fetchCurrentWeather('islamabad')
+  await fetchCurrentWeather('islamabad');
+  renderForecast('islamabad',7)
 });
 document.querySelector('.check-city-weather-hafizabad').addEventListener('click',async()=>{
-  await fetchCurrentWeather('hafizabad')
+  await fetchCurrentWeather('hafizabad');
+  renderForecast('hafizabad',7)
 });
 document.querySelector('.check-city-weather-istanbul').addEventListener('click',async()=>{
   await fetchCurrentWeather('istanbul');
-  console.log(city)
+  renderForecast('istanbul',7)
 });
 document.querySelector('.your-location').addEventListener('click',async()=>{
   await getCurrentLocation();
-  console.log(city)
+  renderForecast(city,7)
 });
 
 //! Forcast DAYS SELECTOR
@@ -192,45 +199,30 @@ document.querySelectorAll('.forcast-days-selected')
       .querySelectorAll('.forcast-days-selected')
       .forEach(b => b.classList.remove('active-forcast-day-selector'));
     btn.classList.add('active-forcast-day-selector');
-  let btnClick;
-  if(btn.classList.contains('active-forcast-day-selector')){
-    btnClick = btn;
-  } 
-  const forcastDays = btnClick.dataset.forcastSelected;
-  console.log(forcastDays)
+  const forcastDays = selectDaysForForcast();
+  console.log(forcastDaysValue);
+  console.log(forcastDays);
   });
 });
 
-async function fetch7DayForecast(lat, lon) {
-  const apiKey = 'b19bdbbf07a84cba965153941251108&q'; // replace with your real WeatherAPI key
-  const url = `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${lat},${lon}&days=7&aqi=no&alerts=no`;
-
+export async function fetchForecast(acity,days) {
+  const apiKey = 'b19bdbbf07a84cba965153941251108'; 
+  const url = `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${acity}&days=${days}&aqi=no&alerts=no`;
+  console.log(url)
   try {
     const response = await fetch(url);
     if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-    
     const data = await response.json();
-
-    console.log('📅 7-Day Forecast:', data.forecast.forecastday);
-
-    // Example: Loop through each day's forecast
-    data.forecast.forecastday.forEach(day => {
-      console.log(`
-        Date: ${day.date}
-        Max Temp: ${day.day.maxtemp_c}°C
-        Min Temp: ${day.day.mintemp_c}°C
-        Condition: ${day.day.condition.text}
-        Icon: ${day.day.condition.icon}
-      `);
-    });
-
-    return data.forecast.forecastday;
+    console.log(data)
+    return data;
   } catch (error) {
     console.error('❌ Error fetching 7-day forecast:', error);
   }
 }
-console.log(city)
-
-// Example usage:
-fetch7DayForecast(31.5497, 74.3436); // Lahore lat/lon
-
+console.log(city);
+document.querySelector('.days7').addEventListener('click',()=>{
+  renderForecast(city,7)
+});
+document.querySelector('.days10').addEventListener('click',()=>{
+  renderForecast(city,10)
+});

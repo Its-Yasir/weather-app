@@ -1,9 +1,9 @@
-import { getCurrentTime,getTimeByLatLon } from "./funs.js";
+import { getCurrentTime,getTimeByLatLon,getCurrentLocation } from "./funs.js";
 
 let lat, 
     lon,
     result,
-    city='Lahore',
+    city,
     country='Pakistan',
     weather = 'Heavy Rain',
     temperature=24,
@@ -21,7 +21,7 @@ const options = {
 function error() {
   alert("Unable to retrieve your location. Please allow location access.");
 }
-async function fetchCurrentWeather(cityParam) {
+export async function fetchCurrentWeather(cityParam) {
   const url = `https://api.weatherapi.com/v1/current.json?key=b19bdbbf07a84cba965153941251108&q=${cityParam}`;
   try {
     const response = await fetch(url, options);
@@ -53,6 +53,12 @@ async function fetchCurrentWeather(cityParam) {
     const mapUrl = `https://maps.locationiq.com/v3/staticmap?key=pk.1da9136f8ec6ed1f78714e47b665667b&center=${lat},${lon}&zoom=10&size=${mapWidth}x${mapHeight}&format=png&maptype=streets&markers=icon:https://locationiq.com/static/img/marker.png|${lat},${lon}`;
     document.querySelector('.map-box').style.background = `url('${mapUrl}')`
     // You can now call other functions that depend on lat/lon here
+    return {
+    city: result.location.name,
+    country: result.location.country,
+    lat: result.location.lat,
+    lon: result.location.lon
+  };
   } catch (error) {
     console.error('Error fetching weather data:', error);
   }
@@ -60,134 +66,171 @@ async function fetchCurrentWeather(cityParam) {
 fetchCurrentWeather('lahore');
 
 
+function generateCart(){
+  const ctx = document.getElementById('temperatureChart').getContext('2d');
 
-const ctx = document.getElementById('temperatureChart').getContext('2d');
+    // Example temperature data in Celsius
+    const temperatureData = [70, 78, 62, 75, 81, 85, 76, 81, 82, 75];
+    document.getElementById('temperatureChart').width = temperatureData.length * 100;
+    // Labels for every hour (you can customize this dynamically)
+    const labels = ['1 AM', '2 AM', '3 AM', '4 AM', '5 AM', '6 AM', '7 AM', '8 AM', '9 AM', '10 AM'];
 
-  // Example temperature data in Celsius
-  const temperatureData = [70, 78, 62, 75, 81, 85, 76, 81, 82, 75];
-  document.getElementById('temperatureChart').width = temperatureData.length * 100;
-  // Labels for every hour (you can customize this dynamically)
-  const labels = ['1 AM', '2 AM', '3 AM', '4 AM', '5 AM', '6 AM', '7 AM', '8 AM', '9 AM', '10 AM'];
-
-  // Create a vertical gradient fill (top to bottom)
-  const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-  gradient.addColorStop(0, 'rgba(39, 107, 255, 0.98)');
-  gradient.addColorStop(1, 'rgba(102, 99, 255, 0)');
-const chart = new Chart(ctx, {
-  type: 'line',
-  data: {
-    labels: labels,
-    datasets: [{
-      data: temperatureData,
-      fill: true,
-      backgroundColor: gradient,
-      borderColor: 'rgba(0, 60, 255, 1)',
-      tension: 0.3,
-      pointBackgroundColor: '#0011ff',
-      pointBorderColor: 'rgba(0, 8, 255, 0)',
-    }]
-  },
-  options: {
-    responsive: false,
-    plugins: {
-      legend: {
-        display: false
-      },
-      datalabels: {
-        align: 'top',
-        anchor: 'end',
-        color: '#fff',
-        font: {
-          family: 'Poppins',   // ✅ Use Poppins
-          size: 16,            // ✅ Make labels bigger
-          weight: 'bold'       // ✅ Bold
-        },
-        formatter: (value) => `${value}%`
-      }
+    // Create a vertical gradient fill (top to bottom)
+    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, 'rgba(39, 107, 255, 0.98)');
+    gradient.addColorStop(1, 'rgba(102, 99, 255, 0)');
+  const chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        data: temperatureData,
+        fill: true,
+        backgroundColor: gradient,
+        borderColor: 'rgba(0, 60, 255, 1)',
+        tension: 0.3,
+        pointBackgroundColor: '#0011ff',
+        pointBorderColor: 'rgba(0, 8, 255, 0)',
+      }]
     },
-    scales: {
-      x: {
-        ticks: {
-          color: '#ffffff',
-          font: {
-            family: 'Poppins',  // ✅ Font for X-axis
-            size: 14,           // ✅ Slightly bigger
-            weight: '600'       // ✅ Semi-bold
-          }
-        },
-        grid: {
+    options: {
+      responsive: false,
+      plugins: {
+        legend: {
           display: false
         },
-        title: {
-          display: true,
-          text: 'Time (Hourly)',
-          color: '#ffffff',
-          font: {
-            family: 'Poppins',
-            size: 16,
-            weight: 'bold'
-          }
-        }
-      },
-      y: {
-        grid: {
-          display: false
-        },
-        ticks: {
-          display: false
-        },
-        title: {
-          display: true,
-          text: 'Chances of Rain',
+        datalabels: {
+          align: 'top',
+          anchor: 'end',
           color: '#fff',
           font: {
-            family: 'Poppins',
-            size: 16,
-            weight: 'bold'
+            family: 'Poppins',   // ✅ Use Poppins
+            size: 16,            // ✅ Make labels bigger
+            weight: 'bold'       // ✅ Bold
+          },
+          formatter: (value) => `${value}%`
+        }
+      },
+      scales: {
+        x: {
+          ticks: {
+            color: '#ffffff',
+            font: {
+              family: 'Poppins',  // ✅ Font for X-axis
+              size: 14,           // ✅ Slightly bigger
+              weight: '600'       // ✅ Semi-bold
+            }
+          },
+          grid: {
+            display: false
+          },
+          title: {
+            display: true,
+            text: 'Time (Hourly)',
+            color: '#ffffff',
+            font: {
+              family: 'Poppins',
+              size: 16,
+              weight: 'bold'
+            }
           }
         },
-        grace: '10%'
+        y: {
+          grid: {
+            display: false
+          },
+          ticks: {
+            display: false
+          },
+          title: {
+            display: true,
+            text: 'Chances of Rain',
+            color: '#fff',
+            font: {
+              family: 'Poppins',
+              size: 16,
+              weight: 'bold'
+            }
+          },
+          grace: '10%'
+        }
       }
-    }
-  },
-  plugins: [ChartDataLabels]
+    },
+    plugins: [ChartDataLabels]
+  });
+}
+
+document.querySelector('.check-city-weather-lahore').addEventListener('click',async()=>{
+  await fetchCurrentWeather('lahore');
+  console.log(city)
+});
+document.querySelector('.check-city-weather-karachi').addEventListener('click',async()=>{
+  await fetchCurrentWeather('karachi');
+  console.log(city);
+});
+document.querySelector('.check-city-weather-islamabad').addEventListener('click',async()=>{
+  await fetchCurrentWeather('islamabad')
+});
+document.querySelector('.check-city-weather-hafizabad').addEventListener('click',async()=>{
+  await fetchCurrentWeather('hafizabad')
+});
+document.querySelector('.check-city-weather-istanbul').addEventListener('click',async()=>{
+  await fetchCurrentWeather('istanbul');
+  console.log(city)
+});
+document.querySelector('.your-location').addEventListener('click',async()=>{
+  await getCurrentLocation();
+  console.log(city)
 });
 
+//! Forcast DAYS SELECTOR
 
-document.querySelector('.check-city-weather-lahore').addEventListener('click',()=>{
-  fetchCurrentWeather('lahore')
+document.querySelectorAll('.forcast-days-selected')
+  .forEach((btn) => {
+  btn.addEventListener('click', () => {
+    document
+      .querySelectorAll('.forcast-days-selected')
+      .forEach(b => b.classList.remove('active-forcast-day-selector'));
+    btn.classList.add('active-forcast-day-selector');
+  let btnClick;
+  if(btn.classList.contains('active-forcast-day-selector')){
+    btnClick = btn;
+  } 
+  const forcastDays = btnClick.dataset.forcastSelected;
+  console.log(forcastDays)
+  });
 });
-document.querySelector('.check-city-weather-karachi').addEventListener('click',()=>{
-  fetchCurrentWeather('karachi')
-});
-document.querySelector('.check-city-weather-islamabad').addEventListener('click',()=>{
-  fetchCurrentWeather('islamabad')
-});
-document.querySelector('.check-city-weather-hafizabad').addEventListener('click',()=>{
-  fetchCurrentWeather('hafizabad')
-});
-document.querySelector('.check-city-weather-istanbul').addEventListener('click',()=>{
-  fetchCurrentWeather('istanbul')
-});
 
+async function fetch7DayForecast(lat, lon) {
+  const apiKey = 'b19bdbbf07a84cba965153941251108&q'; // replace with your real WeatherAPI key
+  const url = `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${lat},${lon}&days=7&aqi=no&alerts=no`;
 
+  try {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+    
+    const data = await response.json();
 
+    console.log('📅 7-Day Forecast:', data.forecast.forecastday);
 
+    // Example: Loop through each day's forecast
+    data.forecast.forecastday.forEach(day => {
+      console.log(`
+        Date: ${day.date}
+        Max Temp: ${day.day.maxtemp_c}°C
+        Min Temp: ${day.day.mintemp_c}°C
+        Condition: ${day.day.condition.text}
+        Icon: ${day.day.condition.icon}
+      `);
+    });
 
+    return data.forecast.forecastday;
+  } catch (error) {
+    console.error('❌ Error fetching 7-day forecast:', error);
+  }
+}
+console.log(city)
 
-// const aurl = 'https://weatherbit-v1-mashape.p.rapidapi.com/forecast/3hourly?lat=32.5667&lon=74.0833&units=metric&lang=en';
-// const aoptions = {
-// 	method: 'GET',
-// 	headers: {
-// 		'x-rapidapi-key': '07b0e29c2bmsh10e4ce27b95ed92p17cdbbjsnf5dbb63b6166',
-// 		'x-rapidapi-host': 'weatherbit-v1-mashape.p.rapidapi.com'
-// 	}
-// };
+// Example usage:
+fetch7DayForecast(31.5497, 74.3436); // Lahore lat/lon
 
-// try {
-// 	const aresponse = await fetch(aurl, aoptions);
-// 	const aresult = JSON.parse(await aresponse.text());
-// 	console.log(aresult);
-// } catch (error) {
-// 	console.error(error);
-// }

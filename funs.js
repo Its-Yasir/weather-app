@@ -1,3 +1,5 @@
+import { fetchCurrentWeather } from "./script.js";
+
 export function getCurrentTime() {
     const now = new Date();
     let hours = now.getHours();
@@ -29,4 +31,20 @@ export async function getTimeByLatLon(lat, lon) {
     console.error('Error fetching time:', err);
     return 'Invalid time';
   }
+}
+export async function getCurrentLocation(){
+    if (!navigator.geolocation) {
+        alert("Geolocation is not supported by your browser.");
+        return;
+    }
+    navigator.geolocation.getCurrentPosition(
+        position => {
+            const { latitude, longitude } = position.coords;
+            console.log("Latitude:", latitude, "Longitude:", longitude);
+            fetchCurrentWeather(`${latitude},${longitude}`); // Call your function here
+        },
+        error => {
+            alert(`Error getting location: ${error.message}`);
+        }
+    );
 }

@@ -89,6 +89,8 @@ nav .profile{
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+  z-index: 3;
 }
 .profile .picture{
   width: 40px;
@@ -459,4 +461,6 @@ main{
 .weather-condition-js{
   margin: auto;
   text-align: center;
+  font-weight: 500;
+  font-size: 1.3rem;
 }

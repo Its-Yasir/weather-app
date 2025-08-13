@@ -20,7 +20,6 @@ export async function getTimeByLatLon(lat, lon) {
   try {
     const res = await fetch(`https://timeapi.io/api/Time/current/coordinate?latitude=${lat}&longitude=${lon}`);
     const data = await res.json();
-
     // Format time to skip seconds
     let [hour, minute] = data.time.split(':'); // "18:43:05" → ["18","43","05"]
     hour = parseInt(hour, 10);
@@ -40,7 +39,9 @@ export async function getCurrentLocation(){
     navigator.geolocation.getCurrentPosition(
         position => {
             const { latitude, longitude } = position.coords;
+            
             console.log("Latitude:", latitude, "Longitude:", longitude);
+            return `${latitude},${longitude}`
             fetchCurrentWeather(`${latitude},${longitude}`); // Call your function here
         },
         error => {
@@ -83,10 +84,8 @@ export function selectDaysForForcast(){
     }
 
 export async function renderForecast(city,days){
-    console.log(city)
     const result = await fetchForecast(city,days);
     const forecast = result.forecast.forecastday;
-    console.log(result);
     let html='';
     forecast.forEach((day,index)=>{
         html+= `
@@ -109,3 +108,19 @@ export async function renderForecast(city,days){
     });
     document.querySelector('.forcasts').innerHTML = html;
 }
+export function toSlug(input) {
+  return input.trim().toLowerCase().replace(/\s+/g, '-');
+}
+export async function formatTime(dateTimeStr) {
+  const date = new Date(dateTimeStr); // "2025-08-13 20:43"
+  let hours = date.getHours();
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+
+  hours = hours % 12;
+  hours = hours ? hours : 12; // 0 → 12
+
+  return `${String(hours).padStart(2, '0')}:${minutes} ${ampm}`;
+}
+
+

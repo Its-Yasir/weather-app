@@ -1,4 +1,4 @@
-import { getCurrentTime,getTimeByLatLon,getCurrentLocation,selectDaysForForcast, renderForecast } from "./funs.js";
+import { getCurrentTime,getTimeByLatLon,getCurrentLocation,selectDaysForForcast, renderForecast, toSlug, formatTime } from "./funs.js";
 
 let lat, 
     lon,
@@ -14,7 +14,6 @@ let lat,
     heat = 37,
     time='6:43 PM';
 
-
 const options = {
   method: 'GET'
 };
@@ -27,6 +26,7 @@ export async function fetchCurrentWeather(cityParam) {
   try {
     const response = await fetch(url, options);
     result = await response.json();
+    console.log(result)
     city = result.location.name;
     country = result.location.country;
     temperature = parseInt(result.current.temp_c);
@@ -42,17 +42,24 @@ export async function fetchCurrentWeather(cityParam) {
     document.querySelector('.heat-value').textContent = heat;
     document.querySelector('.humidity-value').textContent = humidity;
     document.querySelector('.wind-value').textContent = airSpeed;
-    document.querySelector('.current-weather-img').src = `${result.current.condition.icon}`
+    if(result.current.condition.icon!== '//cdn.weatherapi.com/weather/64x64/night/113.png'){
+      document.querySelector('.current-weather-img').src = `${result.current.condition.icon}`
+    }else{
+      document.querySelector('.current-weather-img').src = `https://maps.gstatic.com/weather/v1/clear.svg`
+    }
     lat = result.location.lat;
     lon = result.location.lon;
-    getTimeByLatLon(lat, lon).then(time => {
-      document.querySelector('.time').textContent = time;
-    });
-    console.log(result)
+    let time = await  formatTime(result.location.localtime)
+    document.querySelector('.time').textContent = time;
     let mapWidth = document.querySelector('.map-box').clientWidth;
     let mapHeight = document.querySelector('.map-box').clientHeight;
     const mapUrl = `https://maps.locationiq.com/v3/staticmap?key=pk.1da9136f8ec6ed1f78714e47b665667b&center=${lat},${lon}&zoom=10&size=${mapWidth}x${mapHeight}&format=png&maptype=streets&markers=icon:https://locationiq.com/static/img/marker.png|${lat},${lon}`;
     document.querySelector('.map-box').style.background = `url('${mapUrl}')`
+
+    console.log(city)
+    let forcastForGraph = await fetchForecast(city,1);
+    console.log(forcastForGraph)
+
     // You can now call other functions that depend on lat/lon here
     return {
     city: result.location.name,
@@ -75,11 +82,10 @@ function generateChart(){
   const ctx = document.getElementById('temperatureChart').getContext('2d');
 
     // Example temperature data in Celsius
-    const temperatureData = [70, 78, 62, 75, 81, 85, 76, 81, 82, 75];
+    const temperatureData = [70, 78, 62, 75, 81, 85, 76, 81, 82, 75, 25, 46];
     document.getElementById('temperatureChart').width = temperatureData.length * 100;
     // Labels for every hour (you can customize this dynamically)
-    const labels = ['1 AM', '2 AM', '3 AM', '4 AM', '5 AM', '6 AM', '7 AM', '8 AM', '9 AM', '10 AM'];
-
+    const labels = ['1 AM', '3 AM', '5 AM', '7 AM', '9 AM', '11 AM', '1 PM', '8 PM', '10 PM', '12 PM'];
     // Create a vertical gradient fill (top to bottom)
     const gradient = ctx.createLinearGradient(0, 0, 0, 400);
     gradient.addColorStop(0, 'rgba(39, 107, 255, 0.98)');
@@ -164,30 +170,55 @@ function generateChart(){
     plugins: [ChartDataLabels]
   });
 }
+generateChart();
 
 document.querySelector('.check-city-weather-lahore').addEventListener('click',async()=>{
   await fetchCurrentWeather('lahore');
-  renderForecast('lahore',7)
+  if(document.querySelector('.days7').classList.contains('active-forcast-day-selector')){
+    renderForecast('lahore',7);
+  }else{
+    renderForecast('lahore',10);
+  }
 });
 document.querySelector('.check-city-weather-karachi').addEventListener('click',async()=>{
   await fetchCurrentWeather('karachi');
-  renderForecast('karachi',7)
+  if(document.querySelector('.days7').classList.contains('active-forcast-day-selector')){
+    renderForecast('karachi',7);
+  }else{
+    renderForecast('karachi',10);
+  }
 });
 document.querySelector('.check-city-weather-islamabad').addEventListener('click',async()=>{
   await fetchCurrentWeather('islamabad');
-  renderForecast('islamabad',7)
+  if(document.querySelector('.days7').classList.contains('active-forcast-day-selector')){
+    renderForecast('islamabad',7);
+  }else{
+    renderForecast('islamabad',10);
+  }
 });
 document.querySelector('.check-city-weather-hafizabad').addEventListener('click',async()=>{
   await fetchCurrentWeather('hafizabad');
-  renderForecast('hafizabad',7)
+  if(document.querySelector('.days7').classList.contains('active-forcast-day-selector')){
+    renderForecast('hafizabad',7);
+  }else{
+    renderForecast('hafizabad',10);
+  }
 });
 document.querySelector('.check-city-weather-istanbul').addEventListener('click',async()=>{
   await fetchCurrentWeather('istanbul');
-  renderForecast('istanbul',7)
+  if(document.querySelector('.days7').classList.contains('active-forcast-day-selector')){
+    renderForecast('istanbul',7);
+  }else{
+    renderForecast('istanbul',10);
+  }
 });
 document.querySelector('.your-location').addEventListener('click',async()=>{
-  await getCurrentLocation();
-  renderForecast(city,7)
+  city = await getCurrentLocation();
+  if(document.querySelector('.days7').classList.contains('active-forcast-day-selector')){
+    renderForecast(city,7);
+  }else{
+    renderForecast(city,10);
+  }
 });
 
 //! Forcast DAYS SELECTOR
@@ -208,21 +239,30 @@ document.querySelectorAll('.forcast-days-selected')
 export async function fetchForecast(acity,days) {
   const apiKey = 'b19bdbbf07a84cba965153941251108'; 
   const url = `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${acity}&days=${days}&aqi=no&alerts=no`;
-  console.log(url)
   try {
     const response = await fetch(url);
     if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
     const data = await response.json();
-    console.log(data)
     return data;
   } catch (error) {
     console.error('❌ Error fetching 7-day forecast:', error);
   }
 }
-console.log(city);
 document.querySelector('.days7').addEventListener('click',()=>{
   renderForecast(city,7)
 });
 document.querySelector('.days10').addEventListener('click',()=>{
   renderForecast(city,10)
 });
+
+//! CODE FOR SEARCH BUTTON WORKING
+
+const inputElement = document.querySelector('.search-input');
+const searchBtn = document.querySelector('.search-btn');
+searchBtn.addEventListener('click',()=>{
+  city = toSlug(inputElement.value);
+  console.log(city);
+  fetchCurrentWeather(city);
+  renderForecast(city,7)
+})
+

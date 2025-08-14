@@ -13,7 +13,8 @@ let lat,
     airSpeed='18 kph',
     heat = 37,
     time='6:43 PM',
-    chart = null;
+    chart = null,
+    summaryFor = 'rain';
 
 const options = {
   method: 'GET'
@@ -57,18 +58,22 @@ export async function fetchCurrentWeather(cityParam) {
     const mapUrl = `https://maps.locationiq.com/v3/staticmap?key=pk.1da9136f8ec6ed1f78714e47b665667b&center=${lat},${lon}&zoom=10&size=${mapWidth}x${mapHeight}&format=png&maptype=streets&markers=icon:https://locationiq.com/static/img/marker.png|${lat},${lon}`;
     document.querySelector('.map-box').style.background = `url('${mapUrl}')`
 
-    let rainPercentage = [];
+    let forcastDataForSummary = [[],[]]
+    let rainPercentage = forcastDataForSummary[0];
+    let tempPercentage = forcastDataForSummary[1]
     let forcastForGraph = await fetchForecast(city,1);
-    console.log(forcastForGraph.forecast.forecastday[0].hour)
     forcastForGraph.forecast.forecastday[0].hour.forEach((hourData,index)=>{
       if(index%2 !== 0){
         rainPercentage.push(`${
-      hourData.chance_of_rain}`)
+      hourData.chance_of_rain}`);
+        tempPercentage.push(`${parseInt(hourData.temp_c)}`)
       }
-    })
-    console.log(rainPercentage);
-    generateChart(rainPercentage);
-
+    });
+    if(summaryFor === 'rain'){
+      generateChart(rainPercentage,'Chances of Rain','%');
+    }else{
+      generateChart(tempPercentage,'Temperature in Celcius','C')
+    }
     // You can now call other functions that depend on lat/lon here
     return {
     city: result.location.name,
@@ -87,7 +92,7 @@ if(forcastDaysValue===10){
   renderForecast('gujrat',7)
 }
 
-function generateChart(array){
+function generateChart(array,head,deg){
   const ctx = document.getElementById('temperatureChart').getContext('2d');
     // Example temperature data in Celsius
     const temperatureData = array;
@@ -130,7 +135,7 @@ function generateChart(array){
             size: 16,            // ✅ Make labels bigger
             weight: 'bold'       // ✅ Bold
           },
-          formatter: (value) => `${value}%`
+          formatter: (value) => `${value}${deg}`
         }
       },
       scales: {
@@ -166,12 +171,12 @@ function generateChart(array){
           },
           title: {
             display: true,
-            text: 'Chances of Rain',
+            text: `${head}`,
             color: '#fff',
             font: {
               family: 'Poppins',
               size: 16,
-              weight: 'bold'
+              weight: 'normal'
             }
           },
           grace: '10%'
@@ -224,6 +229,8 @@ document.querySelector('.check-city-weather-istanbul').addEventListener('click',
 });
 document.querySelector('.your-location').addEventListener('click',async()=>{
   city = await getCurrentLocation();
+  fetchCurrentWeather(city)
+  console.log(city)
   if(document.querySelector('.days7').classList.contains('active-forcast-day-selector')){
     renderForecast(city,7);
   }else{
@@ -274,4 +281,49 @@ searchBtn.addEventListener('click',()=>{
   console.log(city);
   fetchCurrentWeather(city);
   renderForecast(city,7)
-})
+});
+
+
+document.querySelector('.temperature-selected').addEventListener('click', async ()=>{
+  document.querySelector('.temperature-selected').classList.add('activated-summary-selector');
+  document.querySelector('.rain-selected').classList.remove('activated-summary-selector');
+  summaryFor = 'temperature';
+    let forcastForGraph = await fetchForecast(city,1);
+    let forcastDataForSummary = [[],[]]
+    let rainPercentage = forcastDataForSummary[0];
+    let tempPercentage = forcastDataForSummary[1]
+    forcastForGraph.forecast.forecastday[0].hour.forEach((hourData,index)=>{
+      if(index%2 !== 0){
+        rainPercentage.push(`${
+      hourData.chance_of_rain}`);
+        tempPercentage.push(`${parseInt(hourData.temp_c)}`)
+      }
+    });
+    if(summaryFor === 'rain'){
+      generateChart(rainPercentage,'Chances of Rain','%');
+    }else{
+      generateChart(tempPercentage,'Temperature in Celcius','C')
+    }
+});
+
+document.querySelector('.rain-selected').addEventListener('click', async()=>{
+  document.querySelector('.rain-selected').classList.add('activated-summary-selector');
+  document.querySelector('.temperature-selected').classList.remove('activated-summary-selector');
+  summaryFor = 'rain';
+    let forcastForGraph = await fetchForecast(city,1);
+    let forcastDataForSummary = [[],[]]
+    let rainPercentage = forcastDataForSummary[0];
+    let tempPercentage = forcastDataForSummary[1]
+    forcastForGraph.forecast.forecastday[0].hour.forEach((hourData,index)=>{
+      if(index%2 !== 0){
+        rainPercentage.push(`${
+      hourData.chance_of_rain}`);
+        tempPercentage.push(`${parseInt(hourData.temp_c)}`)
+      }
+    });
+    if(summaryFor === 'rain'){
+      generateChart(rainPercentage,'Chances of Rain','%');
+    }else{
+      generateChart(tempPercentage,'Temperature in Celcius','C')
+    }
+});

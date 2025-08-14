@@ -31,24 +31,27 @@ export async function getTimeByLatLon(lat, lon) {
     return 'Invalid time';
   }
 }
-export async function getCurrentLocation(){
-    if (!navigator.geolocation) {
-        alert("Geolocation is not supported by your browser.");
-        return;
-    }
+export async function getCurrentLocation() {
+  if (!navigator.geolocation) {
+    alert("Geolocation is not supported by your browser.");
+    return;
+  }
+
+  return new Promise((resolve, reject) => {
     navigator.geolocation.getCurrentPosition(
-        position => {
-            const { latitude, longitude } = position.coords;
-            
-            console.log("Latitude:", latitude, "Longitude:", longitude);
-            return `${latitude},${longitude}`
-            fetchCurrentWeather(`${latitude},${longitude}`); // Call your function here
-        },
-        error => {
-            alert(`Error getting location: ${error.message}`);
-        }
+      position => {
+        const { latitude, longitude } = position.coords;     
+        console.log("Latitude:", latitude, "Longitude:", longitude);
+        resolve(`${latitude},${longitude}`);
+      },
+      error => {
+        alert(`Error getting location: ${error.message}`);
+        reject(error);
+      }
     );
+  });
 }
+
 
 export function getDateInfo(daysAhead = 0) {
   // Create a date object for today + daysAhead

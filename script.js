@@ -13,8 +13,9 @@ let lat,
     airSpeed='18 kph',
     heat = 37,
     time='6:43 PM',
-    chart = null,
-    summaryFor = 'rain';
+    buttons = [],
+    chart = null;
+    export let summaryFor = 'rain';
 
 const options = {
   method: 'GET'
@@ -87,12 +88,12 @@ export async function fetchCurrentWeather(cityParam) {
 }
 await fetchCurrentWeather('gujrat');
 if(forcastDaysValue===10){
-  renderForecast('gujrat',10)
+  buttons = await renderForecast('gujrat',10)
 }else{
-  renderForecast('gujrat',7)
+  buttons = await renderForecast('gujrat',7)
 }
 
-function generateChart(array,head,deg){
+export function generateChart(array,head,deg){
   const ctx = document.getElementById('temperatureChart').getContext('2d');
     // Example temperature data in Celsius
     const temperatureData = array;
@@ -101,10 +102,10 @@ function generateChart(array,head,deg){
   }
     document.getElementById('temperatureChart').width = temperatureData.length * 100;
     // Labels for every hour (you can customize this dynamically)
-    const labels = ['1 AM', '3 AM', '5 AM', '7 AM', '9 AM', '11 AM', '1 PM', '8 PM', '10 PM', '12 PM'];
+    const labels = ['1 AM', '3 AM', '5 AM', '7 AM', '9 AM', '11 AM', '1 PM', '3 PM', '5 PM', '8 PM', '10 PM', '12 PM'];
     // Create a vertical gradient fill (top to bottom)
     const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-    gradient.addColorStop(0, 'rgba(39, 107, 255, 0.98)');
+    gradient.addColorStop(0, 'rgba(39, 158, 255, 0.98)');
     gradient.addColorStop(1, 'rgba(102, 99, 255, 0)');
   chart = new Chart(ctx, {
     type: 'line',
@@ -114,9 +115,9 @@ function generateChart(array,head,deg){
         data: temperatureData,
         fill: true,
         backgroundColor: gradient,
-        borderColor: 'rgba(0, 60, 255, 1)',
+        borderColor: 'rgba(0, 145, 255, 1)',
         tension: 0.3,
-        pointBackgroundColor: '#0011ff',
+        pointBackgroundColor: '#0073ffff',
         pointBorderColor: 'rgba(0, 8, 255, 0)',
       }]
     },
@@ -190,41 +191,41 @@ function generateChart(array,head,deg){
 document.querySelector('.check-city-weather-lahore').addEventListener('click',async()=>{
   await fetchCurrentWeather('lahore');
   if(document.querySelector('.days7').classList.contains('active-forcast-day-selector')){
-    renderForecast('lahore',7);
+    buttons = await renderForecast('lahore',7);
   }else{
-    renderForecast('lahore',10);
+    buttons = await renderForecast('lahore',10);
   }
 });
 document.querySelector('.check-city-weather-karachi').addEventListener('click',async()=>{
   await fetchCurrentWeather('karachi');
   if(document.querySelector('.days7').classList.contains('active-forcast-day-selector')){
-    renderForecast('karachi',7);
+    buttons = await renderForecast('karachi',7);
   }else{
-    renderForecast('karachi',10);
+    buttons = await renderForecast('karachi',10);
   }
 });
 document.querySelector('.check-city-weather-islamabad').addEventListener('click',async()=>{
   await fetchCurrentWeather('islamabad');
   if(document.querySelector('.days7').classList.contains('active-forcast-day-selector')){
-    renderForecast('islamabad',7);
+    buttons = await renderForecast('islamabad',7);
   }else{
-    renderForecast('islamabad',10);
+    buttons = await renderForecast('islamabad',10);
   }
 });
 document.querySelector('.check-city-weather-hafizabad').addEventListener('click',async()=>{
   await fetchCurrentWeather('hafizabad');
   if(document.querySelector('.days7').classList.contains('active-forcast-day-selector')){
-    renderForecast('hafizabad',7);
+    buttons = await renderForecast('hafizabad',7);
   }else{
-    renderForecast('hafizabad',10);
+    buttons = await renderForecast('hafizabad',10);
   }
 });
 document.querySelector('.check-city-weather-istanbul').addEventListener('click',async()=>{
   await fetchCurrentWeather('istanbul');
   if(document.querySelector('.days7').classList.contains('active-forcast-day-selector')){
-    renderForecast('istanbul',7);
+    buttons = await renderForecast('istanbul',7);
   }else{
-    renderForecast('istanbul',10);
+    buttons = await renderForecast('istanbul',10);
   }
 });
 document.querySelector('.your-location').addEventListener('click',async()=>{
@@ -232,9 +233,9 @@ document.querySelector('.your-location').addEventListener('click',async()=>{
   fetchCurrentWeather(city)
   console.log(city)
   if(document.querySelector('.days7').classList.contains('active-forcast-day-selector')){
-    renderForecast(city,7);
+    buttons = await renderForecast(city,7);
   }else{
-    renderForecast(city,10);
+    buttons = await renderForecast(city,10);
   }
 });
 
@@ -248,8 +249,6 @@ document.querySelectorAll('.forcast-days-selected')
       .forEach(b => b.classList.remove('active-forcast-day-selector'));
     btn.classList.add('active-forcast-day-selector');
   const forcastDays = selectDaysForForcast();
-  console.log(forcastDaysValue);
-  console.log(forcastDays);
   });
 });
 
@@ -265,65 +264,58 @@ export async function fetchForecast(acity,days) {
     console.error('❌ Error fetching 7-day forecast:', error);
   }
 }
-document.querySelector('.days7').addEventListener('click',()=>{
-  renderForecast(city,7)
+document.querySelector('.days7').addEventListener('click',async()=>{
+  buttons = await renderForecast(city,7)
 });
-document.querySelector('.days10').addEventListener('click',()=>{
-  renderForecast(city,10)
+document.querySelector('.days10').addEventListener('click',async()=>{
+  buttons = await renderForecast(city,10)
 });
 
 //! CODE FOR SEARCH BUTTON WORKING
 
 const inputElement = document.querySelector('.search-input');
 const searchBtn = document.querySelector('.search-btn');
-searchBtn.addEventListener('click',()=>{
+searchBtn.addEventListener('click',async()=>{
   city = toSlug(inputElement.value);
   console.log(city);
   fetchCurrentWeather(city);
-  renderForecast(city,7)
+  buttons = await renderForecast(city,7)
 });
 
+function updateSummary(type) {
+  // Activate the correct summary selector button
+  document.querySelector('.temperature-selected')
+    .classList.toggle('activated-summary-selector', type === 'temperature');
+  document.querySelector('.rain-selected')
+    .classList.toggle('activated-summary-selector', type === 'rain');
 
-document.querySelector('.temperature-selected').addEventListener('click', async ()=>{
-  document.querySelector('.temperature-selected').classList.add('activated-summary-selector');
-  document.querySelector('.rain-selected').classList.remove('activated-summary-selector');
-  summaryFor = 'temperature';
-    let forcastForGraph = await fetchForecast(city,1);
-    let forcastDataForSummary = [[],[]]
-    let rainPercentage = forcastDataForSummary[0];
-    let tempPercentage = forcastDataForSummary[1]
-    forcastForGraph.forecast.forecastday[0].hour.forEach((hourData,index)=>{
-      if(index%2 !== 0){
-        rainPercentage.push(`${
-      hourData.chance_of_rain}`);
-        tempPercentage.push(`${parseInt(hourData.temp_c)}`)
-      }
-    });
-    if(summaryFor === 'rain'){
-      generateChart(rainPercentage,'Chances of Rain','%');
-    }else{
-      generateChart(tempPercentage,'Temperature in Celcius','C')
-    }
-});
+  summaryFor = type;
 
-document.querySelector('.rain-selected').addEventListener('click', async()=>{
-  document.querySelector('.rain-selected').classList.add('activated-summary-selector');
-  document.querySelector('.temperature-selected').classList.remove('activated-summary-selector');
-  summaryFor = 'rain';
-    let forcastForGraph = await fetchForecast(city,1);
-    let forcastDataForSummary = [[],[]]
-    let rainPercentage = forcastDataForSummary[0];
-    let tempPercentage = forcastDataForSummary[1]
-    forcastForGraph.forecast.forecastday[0].hour.forEach((hourData,index)=>{
-      if(index%2 !== 0){
-        rainPercentage.push(`${
-      hourData.chance_of_rain}`);
-        tempPercentage.push(`${parseInt(hourData.temp_c)}`)
-      }
-    });
-    if(summaryFor === 'rain'){
-      generateChart(rainPercentage,'Chances of Rain','%');
-    }else{
-      generateChart(tempPercentage,'Temperature in Celcius','C')
-    }
-});
+  // Find the selected forecast day
+  const selectedDay = document.querySelector('.forcast-for-day-selected');
+  if (!selectedDay) return;
+
+  // Parse the dataset into numbers
+  const allValues = selectedDay.dataset.forForecastSummary
+    .split(',')
+    .map(Number);
+
+  // Rain = first half, Temp = second half
+  const rainData = allValues.slice(0, 12);
+  const tempData = allValues.slice(12, 24);
+
+  if (type === 'rain') {
+    generateChart(rainData, 'Chances of Rain', '%');
+  } else {
+    generateChart(tempData, 'Temperature in Celsius', 'C');
+  }
+}
+
+// Attach event listeners
+document.querySelector('.temperature-selected')
+  .addEventListener('click', () => updateSummary('temperature'));
+
+document.querySelector('.rain-selected')
+  .addEventListener('click', () => updateSummary('rain'));
+
+

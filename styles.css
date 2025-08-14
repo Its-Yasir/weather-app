@@ -337,6 +337,7 @@ main{
 .forcast-for-day{
   display: flex;
   padding: 10px;
+  cursor: pointer;
   height: max-content;
   align-items: center;
   width: 100%;
@@ -463,4 +464,20 @@ main{
   text-align: center;
   font-weight: 500;
   font-size: 1.3rem;
+}
+.forcast-for-day-selected{
+  color: #fff;
+  background: rgba(0, 0, 0, 0.27);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 7px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  transition: all 0.3s ease;
+  padding: 5px 5px;
+  cursor: pointer;
+}
+.forcast-for-day-selected:hover{
+  background: rgba(255, 255, 255, 0.27);
+
 }

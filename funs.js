@@ -1,4 +1,4 @@
-import { fetchCurrentWeather,fetchForecast } from "./script.js";
+import { fetchCurrentWeather, fetchForecast, summaryFor, generateChart } from "./script.js";
 
 export function getCurrentTime() {
     const now = new Date();
@@ -90,9 +90,19 @@ export async function renderForecast(city,days){
     const result = await fetchForecast(city,days);
     const forecast = result.forecast.forecastday;
     let html='';
-    forecast.forEach((day,index)=>{
+    forecast.forEach((day,index)=>{  
+    let forcastDataForSummary = [[],[]]
+    let rainPercentage = forcastDataForSummary[0];
+    let tempPercentage = forcastDataForSummary[1];
+    forecast[index].hour.forEach((hourData,index)=>{
+      if(index%2 !== 0){
+        rainPercentage.push(`${
+      hourData.chance_of_rain}`);
+        tempPercentage.push(`${parseInt(hourData.temp_c)}`)
+      }
+    });
         html+= `
-            <div class="forcast-for-day">
+            <div class="forcast-for-day ${index===0?'forcast-for-day-selected':''} forcast-for-day${index+1}" data-for-forecast-summary = "${forcastDataForSummary}">
             <img src=${day.day.condition.icon} alt="weather img">
             <div class="forcast-temperature">${parseInt(day.day.mintemp_c)}
                 <div class="forcast-degree">o</div>
@@ -110,6 +120,39 @@ export async function renderForecast(city,days){
         `
     });
     document.querySelector('.forcasts').innerHTML = html;
+    // Get all the buttons
+    const buttons = document.querySelectorAll('.forcast-for-day');
+    // Loop through each button and attach a click event listener
+    buttons.forEach(button => {
+      button.addEventListener('click', function() {
+        // Remove 'active' class from all buttons
+        buttons.forEach(btn => btn.classList.remove('forcast-for-day-selected'));
+        // Add 'active' class to the clicked button
+        this.classList.add('forcast-for-day-selected');
+      });
+    });
+
+    buttons.forEach((btn)=>{
+      btn.addEventListener('click',()=>{
+        const str = btn.dataset.forForecastSummary;
+
+        // Convert the string to an array of numbers
+        const allValues = str.split(',').map(Number);
+
+        // Split into two arrays of 12 values each
+        const firstHalf = allValues.slice(0, 12);
+        const secondHalf = allValues.slice(12, 24);
+
+        const result = [firstHalf, secondHalf];
+        console.log(result);
+        if(summaryFor === 'rain'){
+          generateChart(result[0],'Chances of Rain','%')
+        }else{
+          generateChart(result[1],'Temperature in Celcius','C')
+        }
+      });
+    });
+    return document.querySelectorAll('.forcast-for-day');
 }
 export function toSlug(input) {
   return input.trim().toLowerCase().replace(/\s+/g, '-');

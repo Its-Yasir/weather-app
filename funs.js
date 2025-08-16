@@ -37,28 +37,28 @@ export async function getTimeByLatLon(lat, lon) {
     return 'Invalid time';
   }
 }
-
 /*! 📌 Gets user's current geolocation (latitude, longitude) */
 export async function getCurrentLocation() {
   if (!navigator.geolocation) {
     alert("Geolocation is not supported by your browser.");
-    return;
+    return "lahore"; // fallback if browser doesn't support
   }
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     navigator.geolocation.getCurrentPosition(
       position => {
-        const { latitude, longitude } = position.coords;     
-        console.log("Latitude:", latitude, "Longitude:", longitude);
+        const { latitude, longitude } = position.coords; 
         resolve(`${latitude},${longitude}`);
       },
       error => {
-        alert(`Error getting location: ${error.message}`);
-        reject(error);
+        // If user blocks or error occurs → fallback to Lahore
+        console.warn("Geolocation error:", error.message);
+        resolve("lahore");
       }
     );
   });
 }
+
 
 /*! 📅 Returns date info (short day name, short month name, date number) */
 export function getDateInfo(daysAhead = 0) {

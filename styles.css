@@ -458,6 +458,9 @@ main{
   .popular-cities-box{
     grid-area: 15 / 1 / 18 / 5;
   }
+  nav .profile .notification-btn{
+    display: none;
+  }
 }
 .weather-condition-js{
   margin: auto;

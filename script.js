@@ -267,3 +267,8 @@ function updateSummary(type) {
 //! Attach summary toggle buttons
 document.querySelector('.temperature-selected').addEventListener('click', () => updateSummary('temperature'));
 document.querySelector('.rain-selected').addEventListener('click', () => updateSummary('rain'));
+document.addEventListener('keydown',(event)=>{
+  if(event.key==='Enter'){
+    fetchCurrentWeather(inputElement.value);
+  }
+})
